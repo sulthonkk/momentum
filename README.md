@@ -31,7 +31,8 @@ origin in production.
 - **Testing:** pytest + httpx (backend), Vitest + Testing Library + Playwright
   (frontend), ruff + ESLint (lint)
 - **Deployment:** Docker multi-stage build (Node stage builds the frontend,
-  Python stage serves it), orchestrated with `docker-compose.yml`
+  Python stage serves it), orchestrated with `docker-compose.yml`; split
+  hosting (Vercel frontend + Railway backend) also supported
 
 ## Architecture overview
 
@@ -145,6 +146,37 @@ The Docker image builds the frontend (`next build` with `output: 'export'`) and
 serves the resulting static files from FastAPI at `http://localhost:8000` — the
 board is at `/` and the API at `/api/*`. The SQLite database is initialized and
 seeded automatically on first startup.
+
+## Production (Vercel + Railway)
+
+Split deployment: Vercel serves the statically exported frontend and proxies
+`/api/*` and `/login` to the FastAPI backend on Railway (which keeps SQLite on
+a persistent volume). The browser only talks to the Vercel origin, so no CORS
+or cookie changes are needed. `frontend/vercel.json` holds the rewrites and
+`railway.json` pins the Railway build to the existing Dockerfile.
+
+Railway (backend):
+
+1. Create a project from the GitHub repo (build config is read from
+   `railway.json`).
+2. Service → Settings → Volumes: attach a volume at `/app/data` (matches the
+   in-container SQLite default path).
+3. Service → Variables: set `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`
+   (optional), and a strong random `SESSION_SECRET`.
+4. Settings → Networking: generate a public domain, e.g.
+   `https://<name>.up.railway.app`.
+
+Vercel (frontend):
+
+1. Import the GitHub repo as a new project. Framework: Next.js. Set Root
+   Directory to `frontend`.
+2. Project → Settings → Environment Variables: add
+   `BACKEND_URL=https://<name>.up.railway.app` (no trailing slash) for
+   Production and Preview.
+3. Deploy, then sign in at the Vercel URL with `user` / `password`.
+
+The Railway URL also serves a standalone copy of the full app (frontend +
+API on one origin); both entry points share the same database and sessions.
 
 ## Environment
 
