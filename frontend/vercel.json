@@ -4,7 +4,10 @@
   "buildCommand": "npm run build",
   "outputDirectory": "out",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "${BACKEND_URL}/api/:path*" },
-    { "source": "/login", "destination": "${BACKEND_URL}/login" }
+    {
+      "source": "/api/:path*",
+      "destination": "https://momentum-production-3a72.up.railway.app/api/:path*"
+    },
+    { "source": "/login", "destination": "https://momentum-production-3a72.up.railway.app/login" }
   ]
 }

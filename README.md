@@ -172,10 +172,11 @@ Vercel (frontend):
    (the framework preset is overridden to a plain static build by
    `frontend/vercel.json`, because Next.js deployments ignore vercel.json
    rewrites).
-2. Project → Settings → Environment Variables: add
-   `BACKEND_URL=https://<name>.up.railway.app` (no trailing slash) for
-   Production and Preview.
-3. Deploy, then sign in at the Vercel URL with `user` / `password`.
+2. Deploy, then sign in at the Vercel URL with `user` / `password`.
+
+The Railway backend URL is set directly in `frontend/vercel.json` (env-var
+interpolation is not supported in rewrites destinations); update it there if
+the Railway domain changes.
 
 The Railway URL also serves a standalone copy of the full app (frontend +
 API on one origin); both entry points share the same database and sessions.
