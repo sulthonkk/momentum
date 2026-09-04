@@ -168,8 +168,10 @@ Railway (backend):
 
 Vercel (frontend):
 
-1. Import the GitHub repo as a new project. Framework: Next.js. Set Root
-   Directory to `frontend`.
+1. Import the GitHub repo as a new project. Set Root Directory to `frontend`
+   (the framework preset is overridden to a plain static build by
+   `frontend/vercel.json`, because Next.js deployments ignore vercel.json
+   rewrites).
 2. Project → Settings → Environment Variables: add
    `BACKEND_URL=https://<name>.up.railway.app` (no trailing slash) for
    Production and Preview.

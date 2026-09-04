@@ -26,6 +26,8 @@ out/
 frontend/out/
 # Next.js generated
 next-env.d.ts
+# Vercel CLI local artifacts
+.vercel/
 # production build report
 build/
 # npm / yarn logs
