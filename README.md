@@ -6,6 +6,10 @@ the board from natural conversation. The Next.js frontend (React + dnd-kit)
 is statically exported and served by a FastAPI backend behind a single
 origin in production.
 
+## Preview
+
+![Momentum login screen](docs/login.png)
+
 ## Features
 
 - Single Kanban board with five renameable columns and drag-and-drop cards
