@@ -8,6 +8,8 @@ configuration errors to HTTP 503 and upstream request failures to 502.
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from app.ai_chat_service import ChatResult, handle_chat
@@ -19,6 +21,18 @@ from app.schemas import ChatRequest
 router = APIRouter(prefix="/api/ai", tags=["ai"])
 
 _TEST_PROMPT = "What is 2+2? Reply with just the number."
+
+logger = logging.getLogger(__name__)
+
+
+def _describe_upstream_error(exc: Exception) -> str:
+    """Render the SDK exception plus its cause chain for diagnosability."""
+    parts = [f"{type(exc).__name__}: {exc}"]
+    cause = exc.__cause__
+    while cause is not None and len(parts) < 5:
+        parts.append(f"{type(cause).__name__}: {cause}")
+        cause = cause.__cause__
+    return " <- ".join(parts)
 
 
 def _username(request: Request) -> str:
@@ -40,9 +54,10 @@ def test(request: Request) -> dict[str, str]:
             detail="AI not configured (OPENROUTER_API_KEY missing)",
         )
     except Exception as exc:  # upstream SDK / network errors
+        logger.exception("AI test request failed")
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"AI request failed: {exc}",
+            detail=f"AI request failed: {_describe_upstream_error(exc)}",
         )
     return {"answer": answer}
 
@@ -62,8 +77,9 @@ def chat(
             detail="AI not configured (OPENROUTER_API_KEY missing)",
         )
     except Exception as exc:  # upstream SDK / network errors
+        logger.exception("AI chat request failed")
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"AI request failed: {exc}",
+            detail=f"AI request failed: {_describe_upstream_error(exc)}",
         )
     return {"reply": result.reply, "board": result.board.model_dump()}
