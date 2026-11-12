@@ -7,9 +7,9 @@ Orchestrates the structured AI board-chat flow:
 3. Build a JSON-only prompt containing the board snapshot and the supported
    action schema, plus history + the new user message.
 4. Call the AI via :func:`ai_client.ask_chat` with
-   ``response_format={"type": "json_object"}`` (the documented reliable path
-   for ``gpt-oss-20b:free``; per AGENTS.md Phase 7 notes strict ``json_schema``
-   mode is intermittent for this free model).
+    ``response_format={"type": "json_object"}`` (the documented reliable path
+    for free OpenRouter models; per AGENTS.md Phase 7 notes strict
+    ``json_schema`` mode can be intermittent).
 5. Parse + validate the AI payload with the pydantic :class:`AiResponse`
    schema. On parse failure, retry once with a corrective prompt; if the
    retry still fails, return a safe apologetic reply with no mutation.

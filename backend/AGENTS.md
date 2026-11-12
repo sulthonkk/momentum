@@ -27,7 +27,7 @@ statically-exported Next.js frontend (built into `frontend/out/` and copied to
   endpoints. Routes delegate to `board_service` and only handle HTTP concerns.
 - `app/ai_client.py` — OpenRouter AI client. Minimal wrapper over the OpenAI
   SDK pointed at `https://openrouter.ai/api/v1`. Reads `OPENROUTER_API_KEY`
-  and `OPENROUTER_MODEL` (default `openai/gpt-oss-20b:free`) from the env,
+  and `OPENROUTER_MODEL` (default `google/gemma-4-26b-a4b-it:free`) from the env,
   no model name is hardcoded in app code. See "AI connectivity" below.
   Exposes single-turn `ask` (Phase 7) and multi-turn `ask_chat` (Phase 8).
 - `app/ai_chat_service.py` — Phase 8 AI board-chat orchestration. Loads the
@@ -155,7 +155,7 @@ covers every endpoint plus auth-failure and invalid-input cases.
 `app/ai_client.py` is the AI connectivity foundation (Phase 7).
 
 - **Config:** `OPENROUTER_API_KEY` (required) and `OPENROUTER_MODEL`
-  (optional, defaults to `openai/gpt-oss-20b:free` per AGENTS.md) are read
+  (optional, defaults to `google/gemma-4-26b-a4b-it:free` per AGENTS.md) are read
   from the environment. The model name is never hardcoded in application
   code; the default lives here only for local dev convenience.
 - **Client:** wraps the OpenAI SDK pointed at `https://openrouter.ai/api/v1`.
@@ -175,16 +175,17 @@ covers every endpoint plus auth-failure and invalid-input cases.
 
 ### Model capability notes
 
-`openai/gpt-oss-20b:free` is a reasoning model. Verified live against
-OpenRouter:
+The default dev model is `google/gemma-4-26b-a4b-it:free`, an
+instruction-tuned (non-reasoning) model. The project previously used
+`openai/gpt-oss-20b:free`, a reasoning model for which strict
+`response_format: json_schema` was intermittent (some calls returned
+`content: null` because the model spent the token budget on reasoning).
 
-- Plain text completion: works (e.g. "2+2" -> "4").
-- `response_format: json_schema` (strict structured outputs): supported by
-  the parameter but intermittent for this model — some calls return
-  `content: null` because the model spends the token budget on reasoning.
-  Workaround for Phase 8 (which uses structured outputs): use a generous
-  `max_tokens` (>= 2000), retry on `content is None`, or fall back to
-  `response_format: {type: "json_object"}` (100% reliable in testing).
+- Plain text completion: works for both models (e.g. "2+2" -> "4").
+- Structured outputs (Phase 8): use a generous `max_tokens` (>= 2000), retry
+  on `content is None`, or fall back to
+  `response_format: {type: "json_object"}` (the reliable path used by the AI
+  chat service).
 
 Phase 7 only uses the plain text path, which is reliable.
 
@@ -225,8 +226,9 @@ ai_chat_service.handle_chat(conn, username, message)
 ### Structured-output strategy
 
 Per the Phase 7 model-capability notes, strict `response_format: json_schema`
-is intermittent for `openai/gpt-oss-20b:free` (occasionally returns
-`content: null`). Phase 8 therefore uses the documented reliable fallback:
+can be intermittent on free OpenRouter models (the earlier
+`openai/gpt-oss-20b:free` occasionally returned `content: null`). Phase 8
+therefore uses the documented reliable fallback:
 
 1. `response_format={"type": "json_object"}` (100% reliable per Phase 7 notes)
    + a JSON-only system prompt that declares the exact action schema.

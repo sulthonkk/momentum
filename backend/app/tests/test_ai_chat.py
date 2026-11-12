@@ -377,7 +377,7 @@ def test_chat_never_hits_network(db_chat_client) -> None:
     fake._contents = [json.dumps({"reply": "ok", "action": None})]
     client.post("/api/ai/chat", json={"message": "anything"})
     # All completions.create calls used the fake SDK client.
-    assert all(call["model"] == "openai/gpt-oss-20b:free" for call in fake.calls)
+    assert all(call["model"] == "google/gemma-4-26b-a4b-it:free" for call in fake.calls)
 
 
 def test_chat_uses_json_object_response_format(db_chat_client) -> None:

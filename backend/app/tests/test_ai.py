@@ -95,7 +95,7 @@ def test_ai_test_sends_expected_request_shape(
     kwargs = fake_client.chat.completions.last_kwargs
     assert kwargs is not None
     # The model name must come from the env, not be hardcoded in the call.
-    assert kwargs["model"] == "openai/gpt-oss-20b:free"
+    assert kwargs["model"] == "google/gemma-4-26b-a4b-it:free"
     assert kwargs["messages"] == [
         {"role": "user", "content": "What is 2+2? Reply with just the number."}
     ]

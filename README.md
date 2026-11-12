@@ -71,10 +71,10 @@ origin in production.
   service).
 - **AI connectivity** — OpenAI SDK pointed at OpenRouter
   (`https://openrouter.ai/api/v1`). `OPENROUTER_API_KEY` and
-  `OPENROUTER_MODEL` (default `openai/gpt-oss-20b:free`) come from the
+  `OPENROUTER_MODEL` (default `google/gemma-4-26b-a4b-it:free`) come from the
   environment; no model name is hardcoded in application code. AI board chat
   asks the model for `response_format={"type": "json_object"}` (the
-  reliable path for this free reasoning model per Phase 7 notes), parses and
+  reliable structured-output path), parses and
   validates the payload with a pydantic schema, and retries once on
   malformed JSON before returning a safe reply.
 - **Deployment** — Docker multi-stage build (Node stage builds the
@@ -198,7 +198,7 @@ copy .env.example .env      # Windows
 Required variables (see `.env.example`):
 
 - `OPENROUTER_API_KEY` — OpenRouter API key (used by the AI connectivity layer)
-- `OPENROUTER_MODEL` — model id for AI requests (defaults to `openai/gpt-oss-20b:free`)
+- `OPENROUTER_MODEL` — model id for AI requests (defaults to `google/gemma-4-26b-a4b-it:free`)
 
 Optional variables:
 

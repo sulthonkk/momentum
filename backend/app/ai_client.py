@@ -3,7 +3,7 @@
 A minimal wrapper over the OpenAI SDK pointed at the OpenRouter base URL.
 Reads ``OPENROUTER_API_KEY`` and ``OPENROUTER_MODEL`` from the environment;
 no model name is hardcoded in application code (``OPENROUTER_MODEL`` defaults
-to the dev model ``openai/gpt-oss-20b:free`` per AGENTS.md).
+to the dev model ``google/gemma-4-26b-a4b-it:free`` per AGENTS.md).
 
 Architecture role: the "external dependency" the AI service exposes to
 routes. Routes stay thin (``app/ai_api.py``); this module owns SDK wiring.
@@ -22,7 +22,7 @@ from typing import Any
 from openai import OpenAI
 
 BASE_URL = "https://openrouter.ai/api/v1"
-DEFAULT_MODEL = "openai/gpt-oss-20b:free"
+DEFAULT_MODEL = "google/gemma-4-26b-a4b-it:free"
 
 
 class AIConfigError(RuntimeError):

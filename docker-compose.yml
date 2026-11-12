@@ -7,5 +7,6 @@ services:
       - "8000:8000"
     environment:
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-}
     volumes:
       - ./backend/data:/app/data

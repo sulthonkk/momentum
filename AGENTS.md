@@ -198,7 +198,7 @@ OPENROUTER_MODEL=...
 
 For development, use:
 
-openai/gpt-oss-20b:free
+google/gemma-4-26b-a4b-it:free
 
 Do not hardcode model names inside the application.
 
